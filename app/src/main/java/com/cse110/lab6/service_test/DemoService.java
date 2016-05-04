@@ -1,25 +1,20 @@
 package com.cse110.lab6.service_test;
 
+import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.widget.Toast;
 
-public class DemoService extends Service {
+public class DemoService extends IntentService {
     public DemoService() {
+        super("worker");
     }
 
-    final class MyThread implements Runnable {
-
-        int startId;
-
-        public MyThread(int startId) {
-            this.startId = startId;
-        }
-
-        @Override
-        public void run() {
-
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        if (intent != null)
+        {
             synchronized (this) {
                 try
                 {
@@ -29,7 +24,7 @@ public class DemoService extends Service {
                 catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                stopSelf(startId);
+                stopService(intent);
             }
         }
     }
@@ -38,16 +33,7 @@ public class DemoService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(DemoService.this, "Service started", Toast.LENGTH_SHORT).show();
 
-        Thread thread = new Thread(new MyThread(startId));
-        thread.start();
-
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
